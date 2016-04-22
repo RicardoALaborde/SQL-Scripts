@@ -1,0 +1,30 @@
+CREATE FUNCTION [dbo].[caracterN_ocurrencias]
+(
+@p_string       VARCHAR(MAX),
+@p_caracter      VARCHAR(50),
+@p_ocurrencia        INT
+)
+RETURNS INT
+AS
+/*=======================================================
+Buscar ocurrencias de un caracter en especifico
+=======================================================*/
+BEGIN
+--declarar variables
+DECLARE
+@v_loop  INT,
+@v_posicion   INT
+--variables default
+SET @v_loop = 2
+SET @v_posicion = CHARINDEX(@p_caracter, @p_string)
+--solo hacer loop si ocurrencia de caracter es >1
+WHILE @v_loop <= @p_ocurrencia
+BEGIN--loop
+     
+      --en que posicion esta caracter
+      SET @v_posicion =(SELECT CHARINDEX(@p_caracter, @p_string, @v_posicion+1))
+      --incrementar counter de loop
+      SET @v_loop = @v_loop + 1
+END
+RETURN(@v_posicion)
+END
