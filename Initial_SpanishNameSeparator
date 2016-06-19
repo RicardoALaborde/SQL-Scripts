@@ -1,0 +1,70 @@
+CREATE FUNCTION [dbo].[Fn_GetIni_FirstNameIniLastName1LastName2] (@NAME varchar(255))
+
+RETURNS VARCHAR(255)
+ 
+AS
+ 
+BEGIN
+
+Declare @ini varchar(255)
+ 
+set @ini = 
+
+CASE WHEN dbo.caracterN_ocurrencias(@name,' ', 2) <> 0 THEN
+	/*Si el largo despues del primer espacio es 1*/
+	CASE WHEN 
+	LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) 
+	= 1 
+	THEN
+	/*Escoge el string despues del primer espacio*/
+	LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))
+	/*Para que no saque error con funcion de CharIndex*/
+	WHEN dbo.caracterN_ocurrencias(@name,' ', 3) <> 0 THEN
+		/*Si el largo no es 1, pero contiene la palabra "DE"*/
+		CASE WHEN
+		LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+		('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+		THEN
+			CASE WHEN dbo.caracterN_ocurrencias(@name,' ', 4) <> 0 THEN
+				/*Si la palabra despues de "DE" es "LOS"*/
+				CASE WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+				 ('LOS','LAS','EL','LA')
+				THEN
+				/*Si el largo despues de "LOS" es 1, es una inicial, si no es 1, significa que forma parte de un apellido, por tanto, dejar en blanco*/
+					CASE WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))))
+					= 1
+					THEN
+					/*Concatena las 3 palabras*/
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)) +
+					SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)) +
+					SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3))))
+					ELSE ''
+					END
+				/*Cuando despues de la palabra "De", la palabra que el sigue es de 1 char de largo, seleccionala*/
+				WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))))
+				= 1
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)) +
+				SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))
+				ELSE
+				/*Si no contiene "LOS", dejalo en blanco*/
+				''
+				END
+			ELSE
+				CASE WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))))
+				= 1
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)) +
+				SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))
+				ELSE ''
+				END
+			END
+		ELSE ''
+		END
+	ELSE ''
+	END
+ELSE ''
+END
+Return(@ini)
+ 
+END
