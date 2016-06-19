@@ -1,0 +1,16 @@
+CREATE FUNCTION [dbo].[Fn_GetFirstName_FirstNameIniLastName1LastName2] (@NAME varchar(255))
+ 
+RETURNS VARCHAR(255)
+ 
+AS
+ 
+BEGIN
+
+Declare @firstname varchar(255)
+ 
+set @firstname = left(@name, charindex(' ', @name) - 1)
+
+
+Return(@firstname)
+ 
+END
