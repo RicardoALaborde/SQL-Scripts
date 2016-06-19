@@ -1,0 +1,402 @@
+CREATE FUNCTION [dbo].[Fn_GetLastName2_FirstNameIniLastName1LastName2] (@NAME varchar(255))
+
+RETURNS VARCHAR(255)
+ 
+AS
+ 
+BEGIN
+
+Declare @LastName2 varchar(255)
+ 
+set @LastName2 = CASE WHEN dbo.caracterN_ocurrencias(@name,' ', 2) <> 0 THEN
+	CASE WHEN dbo.caracterN_ocurrencias(@name,' ', 3) <> 0 THEN
+		CASE WHEN dbo.caracterN_ocurrencias(@name,' ', 4) <> 0 THEN
+			CASE WHEN dbo.CaracterN_ocurrencias(@name,' ', 5) <> 0 THEN
+				CASE WHEN dbo.CaracterN_ocurrencias(@name,' ', 6) <> 0 THEN
+					CASE WHEN dbo.CaracterN_ocurrencias(@name,' ', 7) <> 0 THEN
+						/**********
+						EN ESTE CASO SI CUMPLE CON 8 ESPACIOS, SE DEBE VERIFICAR MANUALMENTE
+						**********/
+						CASE WHEN dbo.CaracterN_ocurrencias(@name,' ', 8) <> 0 THEN
+						'VERIFY'
+						/************
+						SOLO TIENE 7 ESPACIOS
+						************/
+						ELSE
+						/************
+						MARIA DE LOS A DE JESUS DE JESUS
+						MARIA DEL C DE LA TORRE DE JESUS
+						************/
+						/***********
+						SI ES INICIAL COMPUESTA EN 3 PARTES Y APELLIDO COMPUESTO EN 2 PARTES,
+						EL APELLIDO M ES COMPUESTO
+						***********/
+						CASE WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ',4) - dbo.caracterN_ocurrencias(@name,' ',3))))) =
+						1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+						THEN
+						LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 6),dbo.caracterN_ocurrencias(@name,' ', 7) - dbo.caracterN_ocurrencias(@name,' ',6)))) + ' ' +
+						SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+						/*************
+						SI ES INICIAL COMPUESTA EN 2 PARTES Y APELLIDO ES COMPUESTO EN 3 PARTES
+						ENTONCES EL APELLIDO M ES COMPUESTO EN 2 PARTES
+						*************/
+						WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ',3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+						1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+						THEN
+						LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 6),dbo.caracterN_ocurrencias(@name,' ', 7) - dbo.caracterN_ocurrencias(@name,' ',6)))) + ' ' +
+						SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+						/***********
+						SI ES INICIAL COMPUESTA EN 3 PARTES Y APELLIDO COMPUESTO EN 3 PARTES,
+						EL APELLIDO M NO ES COMPUESTO
+						***********/
+						WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ',4) - dbo.caracterN_ocurrencias(@name,' ',3))))) =
+						1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 6),dbo.caracterN_ocurrencias(@name,' ', 7) - dbo.caracterN_ocurrencias(@name,' ',6)))) IN
+						('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+						THEN
+						SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+						/**************
+						SI LA INICIAL NO ES COMPUESTA
+						ENTONCES LOS 2 APELLIDOS SON COMPUESTOS POR 3 PARTES
+						**************/
+						WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ',2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+						1
+						THEN
+						LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 5),dbo.caracterN_ocurrencias(@name,' ', 6) - dbo.caracterN_ocurrencias(@name,' ',5)))) + ' ' +
+						LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 6),dbo.caracterN_ocurrencias(@name,' ', 7) - dbo.caracterN_ocurrencias(@name,' ',6)))) + ' ' +
+						SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+						END
+						END
+					/***********
+					SOLO TIENE 6 ESPACIOS
+					***********/
+					ELSE
+					/**********
+					JOSE DE LOS A DE JESUS RODRIGUEZ
+					JOSE DE LOS A RODRIGUEZ DE JESUS
+					JOSE DEL C DE JESUS DE JESUS
+					JOSE DEL C RODRIGUEZ DE LA TORRE
+					JOSE DE LA TORRRE DE LA TORRE
+					**********/
+					/*********
+					CUANDO HAY UNA INICIAL COMPUESTA POR 3 PARTES, Y DESPUES
+					DE LA INICIAL HAY UN APELLIDO COMPUESTO, ENTONCES EL ULTIMO
+					STRING ES EL APELLIDO M
+					*********/
+					CASE WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ',4) - dbo.caracterN_ocurrencias(@name,' ',3))))) =
+					1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+					THEN
+					SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+					/*********
+					CUANDO HAY UNA INICIAL COMPUESTA POR 3 PARTES, Y DESPUES
+					DE LA INICIAL NO HAY UN APELLIDO COMPUESTO, ENTONCES LOS DOS ULTIMOS
+					STRINGS ES EL APELLIDO M
+					*********/
+					WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ',4) - dbo.caracterN_ocurrencias(@name,' ',3))))) =
+					1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) NOT IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+					THEN
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 5),dbo.caracterN_ocurrencias(@name,' ', 6) - dbo.caracterN_ocurrencias(@name,' ',5)))) + ' ' +
+					SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+					/************
+					CUANDO HAY UNA INICIAL COMPUESTA POR 2 PARTES, Y EL APELLIDO P ES COMPUESTO
+					SIGNIFICA QUE EL APELLIDO MATERNO ES COMPUESTO EN 2 PARTES
+					************/
+					WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ',3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+					1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) NOT IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+					THEN
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 5),dbo.caracterN_ocurrencias(@name,' ', 6) - dbo.caracterN_ocurrencias(@name,' ',5)))) + ' ' +
+					SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+					/*************
+					CUANDO HAY UNA INICIAL COMPUESTA POR 2 PARTES, Y EL APELLIDO P NO ES COMPUESTO,
+					ENTONCES EL APELLIDO M ES COMPUESTO EN 3 PARTES
+					************/
+					WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ',3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+					1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) NOT IN
+					('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+					THEN
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 5),dbo.caracterN_ocurrencias(@name,' ', 6) - dbo.caracterN_ocurrencias(@name,' ',5)))) + ' ' +
+					SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+					/************
+					SI NO HAY INICIAL
+					ENTONCES APELLIDO M ES COMPUESTO EN 3 PARTES
+					*************/
+					WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ',2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+					1
+					THEN
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+					LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 5),dbo.caracterN_ocurrencias(@name,' ', 6) - dbo.caracterN_ocurrencias(@name,' ',5)))) + ' ' +
+					SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+					END
+					END
+				/*********
+				SOLO TIENE 5 ESPACIOS
+				*********/
+				ELSE
+				/********
+				JOSE D DE JESUS DE JESUS
+				JOSE DEL J DE JESUS RODRIGUEZ
+				JOSE DE LOS A RODRIGUEZ TORRES
+				JOSE DEL C TORRES DE JESUS
+				JOSE A TORRES DE LA TORRE
+				********/
+				/*******
+				CUANDO HAY INICIAL DESPUES DE NOMBRE, 
+				Y DESPUES HAYA APELLIDO COMPUESTO POR 2 PARTES, SIGNIFICA QUE APELLIDO MATERNO
+				TAMBIEN ES COMPUESTO
+				********/
+				CASE WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) NOT IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/******
+				CUANDO HAY UNA INICIAL COMPUESTA POR 2 PARTES (DE J, DEL J)
+				Y UN DE, DESPUES DE LA INICIAL COMPUESTA (DE J DE JESUS),
+				ENTONCES EL APELLIDO MATERNO NO ES COMPUESTO, SELECT EL ULTIMO STRING
+				******/
+				WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+				THEN
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/*********
+				CUANDO HAY UNA INICIAL COMPUESTA POR 3 PARTES,
+				SIGNIFICA QUE EL APELLIDO M ES EL ULTIMO STRING
+				*********/
+				WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ',4) - dbo.caracterN_ocurrencias(@name,' ',3))))) =
+				1
+				THEN
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/************
+				CUANDO HAY UNA INICIAL COMPUESTA POR 2 PARTES (DE J, DEL J)
+				Y NO HAY UN DE, DESPUES DE LA INICIAL COMPUESTA (DE J DE JESUS),
+				ENTONCES EL APELLIDO MATERNO ES COMPUESTO, SELECT LOS 2 ULTIMOS STRINGS
+				******/
+				WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) NOT IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/**************
+				CUANDO HAY UNA INICIAL NO COMPUESTA, Y UN APELLIDO P NO COMPUESTO,
+				EL APELLIDO M ES COMPUESTO EN 3 PARTES
+				**************/
+				WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) NOT IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) + ' ' +
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/*****************
+				SI LA INICIAL NO ES COMPUESTA Y EL APELLIDO P
+				ES COMPUESTO EN 3 PARTES, EL APELLIDO M ES SOLO EL ULTIMO
+				STRING
+				*****************/
+				WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+				THEN
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/**************
+				CUANDO NO HAY INICIAL Y EL APELLIDO P ES COMPUESTO EN 2 PARTES,
+				EL APELLIDO M ES COMPUESTO EN 3 PARTES
+				**************/
+				WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) <>
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) NOT IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) <>
+				1
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) + ' ' +
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				/**************
+				SI NO HAY INICIAL Y EL APELLIDO P ES COMPUESTO EN 3 PARTES, ENTONCES
+				EL APELLIDO M ES COMPUESTO EN 2 PARTES
+				**************/
+				WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) <>
+				1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+				('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3))))) <>
+				1
+				THEN
+				LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 4),dbo.caracterN_ocurrencias(@name,' ', 5) - dbo.caracterN_ocurrencias(@name,' ',4)))) + ' ' +
+				SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+				ELSE ''
+				END
+				END
+			/*********
+			SOLO TIENE 4 ESPACIOS
+			*********/
+			ELSE
+			/********
+			JOSE D JOSE DE JESUS
+			JOSE DE JESUS DE JESUS
+			JOSE DEL P RODRIGUEZ JESUS
+			JOSE TORRES DE LA CRUZ
+			********/
+			/******
+			SI NO HAY INICIAL, NI INICIAL COMPUESTA,
+			Y APELLIDO PATERNO NO ES COMPUESTO, ENTONCES
+			EL APELLIDO MATERNO ES COMPUESTO POR 3 PARTES
+			******/
+			CASE WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) <>
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) NOT IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+			THEN
+			LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) + ' ' +
+			LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) + ' ' +
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			/******
+			SI HAY INICIAL, Y LUEGO DE LA INICIAL,
+			LE SIGUE UN APELLIDO NO COMPUESTO, O SEA,
+			DESPUES DE SEGUNDO ESPACIO NO HAY UN DE/DEL
+			*******/
+			WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) NOT IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+			THEN
+			LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) + ' ' +
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			/*********
+			SI HAY INICIAL, Y LUEGO DE LA INICIAL, HAY APELLIDO
+			COMPUESTO, SIGNIFICA QUE SOLO EL ULTIMO STRING ES
+			APELLIDO M
+			********/
+			WHEN
+			LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+			THEN
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			/*******
+			SI HAY UNA INICIAL COMPUESTA, SIGNIFICA QUE ULTIMO STRING ES APELLIDO M
+			*******/
+			WHEN
+			LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) =
+			1
+			THEN
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			/********
+			SI NO HAY INICIAL, NI INICIAL COMPUESTA Y EL APELLIDO P ES COMPUESTO EN 2 PARTES,
+			ENTONCES EL APELLIDO M ES COMPUESTO
+			********/
+			WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) <>
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) <>
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) NOT IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL')
+			THEN
+			LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3)))) + ' ' +
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			/*****************
+			SI NO HAY INICIAL, NI INICIAL COMPUESTA, Y EL APELLIDO P ES COMPUESTO EN 3 PARTES,
+			ENTONCES EL ULTIMO STRING ES EL APELLIDO P
+			*****************/
+			WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) <>
+			1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) IN
+			('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 3),dbo.caracterN_ocurrencias(@name,' ', 4) - dbo.caracterN_ocurrencias(@name,' ',3))))) <>
+			1
+			THEN
+			SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+			END
+			END
+		/*********
+		SOLO TIENE 3 ESPACIOS
+		*********/
+		ELSE
+		/******
+		HAY 3 ESPACIOS,
+		PUEDE SER QUE SEA
+		JESUS D RODRIGUEZ VERA
+		JESUS DEL C RODRIGUEZ
+		JESUS RODRIGUEZ DE JESUS
+		******/
+		/***********
+		VERIFICAR SI HAY INICIAL EN EL NOMBRE,
+		EN CASO DE INICIAL, SE ESCOGE SOLO EL ULTIMO STRING
+		***********/
+		CASE WHEN LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) =
+		1
+		THEN
+		SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+		/***********
+		VERIFICAR SI EXISTE DE/DEL EN EL ESPACIO DESPUES DE NOMBRE,
+		EN CASO DE QUE LO HAYA Y SU PROXIMA PALABRA NO SEA INICIAL,
+		NI DE/DEL SE ESCOGE SOLO EL ULTIMO STRING
+		***********/
+		WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) IN
+		('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2))))) 
+		<> 1 AND LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) NOT IN
+		('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL','LOS','LAS')
+		THEN
+		SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+		/***********
+		VERIFICAR SI EXISTE DE/DEL EN EL ESPACIO DESPUES DE NOMBRE,
+		EN CASO DE QUE NO LO HAYA Y SU PROXIMA PALABRA NO SEA INICIAL,
+		SE ESCOGE EL PENULTIMO Y ULTIMO STRING PORQUE ES UN APELLIDO COMPUESTO
+		***********/
+		WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) NOT IN
+		('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) 
+		<> 1
+		THEN
+		LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 2),dbo.caracterN_ocurrencias(@name,' ', 3) - dbo.caracterN_ocurrencias(@name,' ',2)))) + ' ' +
+		SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+		ELSE ''
+		END
+		END
+	/******
+	SOLO TIENE 2 ESPACIOS
+	******/
+	ELSE
+	/***********
+	SI NOMBRE CONTIENE SOLO 2 ESPACIOS
+	Y NO LE SIGUE UNA INICIAL NI LA PALABRA DE/DEL
+	ENTONCES EL ULTIMO ESPACIO ES APELLIDO MATERNO
+	***********/
+	CASE WHEN LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1)))) NOT IN
+	('DE','DEL','LA','DI','MC','SAN','SANTO','LE','VON','EL') AND LEN(LTRIM(RTRIM(SUBSTRING(@name,dbo.caracterN_ocurrencias(@name,' ', 1),dbo.caracterN_ocurrencias(@name,' ', 2) - dbo.caracterN_ocurrencias(@name,' ',1))))) 
+	<> 1
+	THEN 
+	SUBSTRING(@name, LEN(@name) - CHARINDEX(' ', REVERSE(@name)) + 2, LEN(@name))
+	ELSE
+	''
+	END
+	END
+ELSE ''
+END
+
+Return(@LastName2)
+ 
+END
