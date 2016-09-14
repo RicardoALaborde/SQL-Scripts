@@ -1,5 +1,5 @@
 CREATE FUNCTION dbo.fx_anagram(@values1 nvarchar(255),@values2 nvarchar(255)) 
-RETURNS NVARCHAR (255)
+RETURNS NVARCHAR (7)
 AS
 
 BEGIN
